@@ -20,14 +20,6 @@ module.exports = function() {
 		};
 
 	StructureSpawn.prototype.createForager =
-	
-		/** 
-		 * @param {number} energy
-		 * @param {string} name
-		 * @param {number} numberOfWorkParts
-		 * @param {string} home
-		 * @param {string} target
-		 * @param {number} sourceIndex **/
 		function (energy, name, home, target, sourceIndex) {
 			// Create a body with the specified number of WORK parts and one MOVE part per non-MOVE part
 			var numberOfWorkParts = Math.floor(energy / 200);
@@ -56,4 +48,10 @@ module.exports = function() {
 				working: false
 			});
 		};
+
+	// create a new function for StructureSpawn
+	StructureSpawn.prototype.createClaimer =
+		function (name, target) {
+			return this.createCreep([CLAIM, MOVE], name, { role: 'claimer', target: target });
+		}
 };

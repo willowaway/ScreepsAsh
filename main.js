@@ -10,6 +10,7 @@ var roleBuilder = require('role.builder');
 var roleRepairer = require('role.repairer');
 var rolePatcher = require('role.patcher');
 var roleForager = require('role.forager');
+var roleClaimer = require('role.claimer');
 
 var HOME = Game.spawns.Spawn1.room.name;
 console.log("Home: " + HOME);
@@ -46,6 +47,9 @@ module.exports.loop = function () {
 		}
 		else if(creep.memory.role == 'forager') {
 			roleForager.run(creep);
+		}
+		else if(creep.memory.role == 'claimer') {
+			roleClaimer.run(creep);
 		}
 	}
 
@@ -88,6 +92,7 @@ module.exports.loop = function () {
     var minimumNumberOfRepairers = 1 + Math.floor(numberOfStructures / 2);
     var minimumNumberOfPatchers = 1 + Math.floor(numberOfWalls / 5);
     var minimumNumberOfForagers = 1 + Math.floor(numberOfHarvesters / 3) + Math.floor(numberOfBuilders / 3);
+	var minimumNumberOfClaimers = 1;
 
 	var energy = Game.spawns.Spawn1.room.energyCapacityAvailable;
 	var name = undefined;
@@ -120,10 +125,14 @@ module.exports.loop = function () {
 		var newName = 'Patcher' + (numberOfPatchers + 1);
 		name = Game.spawns.Spawn1.createCustomCreep(energy, newName, 'patcher');
     }
+    else if (numberOfClaimers < minimumNumberOfClaimers) {
+		var newName = 'Claimer' + (numberOfClaimers + 1);
+		name = Game.spawns.Spawn1.createClaimer(newName, 'W6N8');
+    }
     else if (numberOfForagers < minimumNumberOfForagers) {
 		var newName = 'Forager' + (numberOfForagers + 1);
 		name = Game.spawns.Spawn1.createForager(energy, newName, HOME, 'W6N8', 0);
-    }
+	}
     else {
 		var newName = 'Builder' + (numberOfBuilders + 1);
 		name = Game.spawns.Spawn1.createCustomCreep(energy, newName, 'builder');
