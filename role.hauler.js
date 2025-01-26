@@ -34,15 +34,7 @@ var roleHauler = {
 		else {
 			creep.say('📦 Pickup');
             
-            const droppedEnergy = creep.room.find(FIND_DROPPED_RESOURCES, {
-                filter: resource => resource.resourceType == RESOURCE_ENERGY
-            });
-
-            const closestDroppedEnergy = creep.pos.findClosestByRange(droppedEnergy);
-
-            if (creep.pickup(closestDroppedEnergy) == ERR_NOT_IN_RANGE) {
-				creep.moveTo(closestDroppedEnergy, {visualizePathStyle: {stroke: '#ffaa00'}});
-            }
+            creep.pickupEnergy();
 		}
 	}
 };

@@ -53,14 +53,14 @@ StructureSpawn.prototype.spawnCreepWithRole =
 		var roomControllerLevel = room.controller.level;
 
 		// setup some minimum numbers for different roles
-		var minimumNumberOfStarters = creepsInRoom.length > 0 ? 0 : 1;
-		var minimumNumberOfHarvesters = numberOfActiveSources;
-		var minimumNumberOfHaulers = numberOfActiveSources * 2;
+		var minimumNumberOfStarters = creepsInRoom.length > 0 ? 0 : 2;
+		var minimumNumberOfHarvesters = numberOfActiveSources * 3;
+		var minimumNumberOfHaulers = numberOfActiveSources;
 		var minimumNumberOfUpgraders = roomControllerLevel * 2;
-		var minimumNumberOfBuilders = roomControllerLevel * 2;
+		var minimumNumberOfBuilders = roomControllerLevel;
 		var minimumNumberOfRepairers = 1 + Math.floor(numberOfStructures / 4);
 		var minimumNumberOfPatchers = 1 + Math.floor(numberOfWalls / 5);
-		var minimumNumberOfForagers = 1 + Math.floor(numberOfCreeps['harvester'] / 3) + Math.floor(numberOfCreeps['builder'] / 3);
+		var minimumNumberOfForagers = 16;
 		var minimumNumberOfClaimers = 1;
 
 		let maxEnergy = room.energyCapacityAvailable;
@@ -71,7 +71,7 @@ StructureSpawn.prototype.spawnCreepWithRole =
 			var prefix = 'Starter';
 			creepSpawnCode = this.createCustomCreep(maxEnergy, prefix, 'starter');
 
-			// if spawning failed and we have no harvesters left
+			// if spawning failed and we have no starters left
 			if (creepSpawnCode == ERR_NOT_ENOUGH_ENERGY && numberOfCreeps['starter'] == 0) {
 				// spawn one with what is available
 				creepSpawnCode = this.createCustomCreep(room.energyAvailable, prefix, 'starter');
@@ -79,9 +79,21 @@ StructureSpawn.prototype.spawnCreepWithRole =
 		}
 		else if (numberOfCreeps['harvester'] < minimumNumberOfHarvesters) {
 			creepSpawnCode = this.createHarvester(maxEnergy);
+
+			// if spawning failed and we have no harvesters left
+			if (creepSpawnCode == ERR_NOT_ENOUGH_ENERGY && numberOfCreeps['harvester'] == 0) {
+				// spawn one with what is available
+				creepSpawnCode = this.createHarvester(room.energyAvailable);
+			}
 		}
 		else if (numberOfCreeps['hauler'] < minimumNumberOfHaulers) {
 			creepSpawnCode = this.createHauler(maxEnergy);
+
+			// if spawning failed and we have no haulers left
+			if (creepSpawnCode == ERR_NOT_ENOUGH_ENERGY && numberOfCreeps['hauler'] == 0) {
+				// spawn one with what is available
+				creepSpawnCode = this.createHauler(room.energyAvailable);
+			}
 		}
 		else if (numberOfCreeps['upgrader'] < minimumNumberOfUpgraders) {
 			creepSpawnCode = this.createCustomCreep(maxEnergy, 'Upgrader', 'upgrader');
@@ -105,9 +117,9 @@ StructureSpawn.prototype.spawnCreepWithRole =
 			creepSpawnCode = this.createCustomCreep(maxEnergy, 'Builder', 'builder');
 		}
 
-		if (creepSpawnCode == ERR_NOT_ENOUGH_ENERGY) {
-			creepSpawnCode = this.createForager(maxEnergy, 0);
-		}
+		// if (creepSpawnCode == ERR_NOT_ENOUGH_ENERGY && numberOfCreeps['forager'] <= minimumNumberOfForagers) {
+		// 	creepSpawnCode = this.createForager(maxEnergy, 0);
+		// }
 
 		// Print name to console if spawning was a success
 		if (!(creepSpawnCode < 0)) {
@@ -119,9 +131,9 @@ StructureSpawn.prototype.spawnCreepWithRole =
 		} else if (creepSpawnCode == -3) {
 			console.log("Failed to spawn: ERR_NAME_EXISTS");
 		} else if (creepSpawnCode == -4) {
-			console.log("Failed to spawn: ERR_BUSY");
+			//console.log("Failed to spawn: ERR_BUSY");
 		} else if (creepSpawnCode == -6) {
-			console.log("Failed to spawn: ERR_NOT_ENOUGH_ENERGY");
+			//console.log("Failed to spawn: ERR_NOT_ENOUGH_ENERGY");
 		} else if (creepSpawnCode == -10) {
 			console.log("Failed to spawn: ERR_INVALID_ARGS");
 		} else if (creepSpawnCode == -14) {
@@ -212,7 +224,7 @@ StructureSpawn.prototype.createCustomCreep =
 		for (let i = 0; i < numberOfParts; i++) {
 			body.push(MOVE);
 		}
-		console.log("Creating " + name + " with body[" + body + "]");
+		// console.log("Creating " + name + " with body[" + body + "]");
 
 		// create creep with the created body and the given role
 		return this.createCreep(body, name, { role: roleName, working: false });
@@ -228,7 +240,7 @@ StructureSpawn.prototype.createHarvester =
 		for (let i = 0; i < numberOfParts; i++) {
 			body.push(WORK);
 		}
-		console.log("Creating " + name + " with body[" + body + "]");
+		// console.log("Creating " + name + " with body[" + body + "]");
 
 		// create creep with the created body and the given role
 		return this.createCreep(body, name, { role: 'harvester' });
@@ -247,7 +259,7 @@ StructureSpawn.prototype.createHauler =
 		for (let i = 0; i < numberOfParts; i++) {
 			body.push(CARRY);
 		}
-		console.log("Creating " + name + " with body[" + body + "]");
+		// console.log("Creating " + name + " with body[" + body + "]");
 
 		// create creep with the created body and the given role
 		return this.createCreep(body, name, { role: 'hauler', working: false });
@@ -273,7 +285,7 @@ StructureSpawn.prototype.createForager =
 		for (let i = 0; i < numberOfParts + numberOfWorkParts; i++) {
 			body.push(MOVE);
 		}
-		console.log("Creating " + name + " with body[" + body + "]");
+		// console.log("Creating " + name + " with body[" + body + "]");
 
 		var target = this.room.getTargetAdjacentRoom();
 
@@ -282,6 +294,8 @@ StructureSpawn.prototype.createForager =
 			role: 'forager',
 			home: this.room.name,
 			target: target,
+			prevX: -1,
+			prevY: -1,
 			sourceIndex: sourceIndex,
 			working: false
 		});
@@ -292,7 +306,7 @@ StructureSpawn.prototype.createClaimer =
 	function () {
 		var name = this.getRandomName("Claimer");
 		var body = [CLAIM, MOVE];
-		console.log("Creating " + name + " with body[" + body + "]");
+		// console.log("Creating " + name + " with body[" + body + "]");
 
 		var target = this.room.getTargetAdjacentRoom();
 

@@ -6,7 +6,7 @@ var roleRepairer = {
         // Trying to repair, but has no energy, switch state to harvesting
         if (creep.memory.working == true && creep.carry.energy == 0) {
             creep.memory.working = false;
-			creep.say('🔄 Harvest');
+            creep.say('📦 Pickup');
         }
         // Harvesting energy, but is full, switch state to repairing||building
         else if (creep.memory.working == false && creep.carry.energy == creep.carryCapacity) {
@@ -31,10 +31,7 @@ var roleRepairer = {
         }
         // Harvest energy from source
         else {
-            var source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-            if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source);
-            }
+            creep.pickupEnergy();
         }
     }
 };
