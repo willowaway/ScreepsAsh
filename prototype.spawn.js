@@ -1,6 +1,6 @@
 require('prototype.room');
 
-var listOfRoles = ['harvester', 'upgrader', 'builder', 'repairer', 'patcher', 'forager', 'claimer'];
+var listOfRoles = ['starter', 'harvester', 'hauler', 'upgrader', 'builder', 'repairer', 'patcher', 'forager', 'claimer'];
 
 var names1 = ["Jackson", "Aiden", "Liam", "Lucas", "Noah", "Mason", "Jayden", "Ethan", "Jacob", "Jack", "Caden", "Logan", "Benjamin", "Michael", "Caleb", "Ryan", "Alexander", "Elijah", "James", "William", "Oliver", "Connor", "Matthew", "Daniel", "Luke", "Brayden", "Jayce", "Henry", "Carter", "Dylan", "Gabriel", "Joshua", "Nicholas", "Isaac", "Owen", "Nathan", "Grayson", "Eli", "Landon", "Andrew", "Max", "Samuel", "Gavin", "Wyatt", "Christian", "Hunter", "Cameron", "Evan", "Charlie", "David", "Sebastian", "Joseph", "Dominic", "Anthony", "Colton", "John", "Tyler", "Zachary", "Thomas", "Julian", "Levi", "Adam", "Isaiah", "Alex", "Aaron", "Parker", "Cooper", "Miles", "Chase", "Muhammad", "Christopher", "Blake", "Austin", "Jordan", "Leo", "Jonathan", "Adrian", "Colin", "Hudson", "Ian", "Xavier", "Camden", "Tristan", "Carson", "Jason", "Nolan", "Riley", "Lincoln", "Brody", "Bentley", "Nathaniel", "Josiah", "Declan", "Jake", "Asher", "Jeremiah", "Cole", "Mateo", "Micah", "Elliot"]
 var names2 = ["Sophia", "Emma", "Olivia", "Isabella", "Mia", "Ava", "Lily", "Zoe", "Emily", "Chloe", "Layla", "Madison", "Madelyn", "Abigail", "Aubrey", "Charlotte", "Amelia", "Ella", "Kaylee", "Avery", "Aaliyah", "Hailey", "Hannah", "Addison", "Riley", "Harper", "Aria", "Arianna", "Mackenzie", "Lila", "Evelyn", "Adalyn", "Grace", "Brooklyn", "Ellie", "Anna", "Kaitlyn", "Isabelle", "Sophie", "Scarlett", "Natalie", "Leah", "Sarah", "Nora", "Mila", "Elizabeth", "Lillian", "Kylie", "Audrey", "Lucy", "Maya", "Annabelle", "Makayla", "Gabriella", "Elena", "Victoria", "Claire", "Savannah", "Peyton", "Maria", "Alaina", "Kennedy", "Stella", "Liliana", "Allison", "Samantha", "Keira", "Alyssa", "Reagan", "Molly", "Alexandra", "Violet", "Charlie", "Julia", "Sadie", "Ruby", "Eva", "Alice", "Eliana", "Taylor", "Callie", "Penelope", "Camilla", "Bailey", "Kaelyn", "Alexis", "Kayla", "Katherine", "Sydney", "Lauren", "Jasmine", "London", "Bella", "Adeline", "Caroline", "Vivian", "Juliana", "Gianna", "Skyler", "Jordyn"]
@@ -53,7 +53,9 @@ StructureSpawn.prototype.spawnCreepWithRole =
 		var roomControllerLevel = room.controller.level;
 
 		// setup some minimum numbers for different roles
+		var minimumNumberOfStarters = creepsInRoom.length > 0 ? 0 : 1;
 		var minimumNumberOfHarvesters = numberOfActiveSources;
+		var minimumNumberOfHaulers = numberOfActiveSources * 2;
 		var minimumNumberOfUpgraders = roomControllerLevel * 2;
 		var minimumNumberOfBuilders = roomControllerLevel * 2;
 		var minimumNumberOfRepairers = 1 + Math.floor(numberOfStructures / 4);
@@ -64,32 +66,34 @@ StructureSpawn.prototype.spawnCreepWithRole =
 		let maxEnergy = room.energyCapacityAvailable;
 		let creepSpawnCode = undefined;
 
-		if (numberOfCreeps['harvester'] < minimumNumberOfHarvesters) {
+		if (numberOfCreeps['starter'] < minimumNumberOfStarters){
 			// try to spawn one
-			var prefix = 'Harvester';
-			creepSpawnCode = this.createCustomCreep(maxEnergy, prefix, 'harvester');
+			var prefix = 'Starter';
+			creepSpawnCode = this.createCustomCreep(maxEnergy, prefix, 'starter');
 
 			// if spawning failed and we have no harvesters left
-			if (creepSpawnCode == ERR_NOT_ENOUGH_ENERGY && numberOfCreeps['harvester'] == 0) {
+			if (creepSpawnCode == ERR_NOT_ENOUGH_ENERGY && numberOfCreeps['starter'] == 0) {
 				// spawn one with what is available
-				creepSpawnCode = this.createCustomCreep(room.energyAvailable, prefix, 'harvester');
+				creepSpawnCode = this.createCustomCreep(room.energyAvailable, prefix, 'starter');
 			}
 		}
+		else if (numberOfCreeps['harvester'] < minimumNumberOfHarvesters) {
+			creepSpawnCode = this.createHarvester(maxEnergy);
+		}
+		else if (numberOfCreeps['hauler'] < minimumNumberOfHaulers) {
+			creepSpawnCode = this.createHauler(maxEnergy);
+		}
 		else if (numberOfCreeps['upgrader'] < minimumNumberOfUpgraders) {
-			var prefix = 'Upgrader';
-			creepSpawnCode = this.createCustomCreep(maxEnergy, prefix, 'upgrader');
+			creepSpawnCode = this.createCustomCreep(maxEnergy, 'Upgrader', 'upgrader');
 		}
 		else if (numberOfCreeps['repairer'] < minimumNumberOfRepairers) {
-			var prefix = 'Repairer';
-			creepSpawnCode = this.createCustomCreep(maxEnergy, prefix, 'repairer');
+			creepSpawnCode = this.createCustomCreep(maxEnergy, 'Repairer', 'repairer');
 		}
 		else if (numberOfCreeps['builder'] < minimumNumberOfBuilders) {
-			var prefix = 'Builder';
-			creepSpawnCode = this.createCustomCreep(maxEnergy, prefix, 'builder');
+			creepSpawnCode = this.createCustomCreep(maxEnergy, 'Builder', 'builder');
 		}
 		else if (numberOfCreeps['patcher'] < minimumNumberOfPatchers) {
-			var prefix = 'Patcher';
-			creepSpawnCode = this.createCustomCreep(maxEnergy, prefix, 'patcher');
+			creepSpawnCode = this.createCustomCreep(maxEnergy, 'Patcher', 'patcher');
 		}
 		else if (numberOfCreeps['claimer'] < minimumNumberOfClaimers) {
 			creepSpawnCode = this.createClaimer();
@@ -98,8 +102,7 @@ StructureSpawn.prototype.spawnCreepWithRole =
 			creepSpawnCode = this.createForager(maxEnergy, 0);
 		}
 		else {
-			var prefix = 'Builder';
-			creepSpawnCode = this.createCustomCreep(maxEnergy, prefix, 'builder');
+			creepSpawnCode = this.createCustomCreep(maxEnergy, 'Builder', 'builder');
 		}
 
 		if (creepSpawnCode == ERR_NOT_ENOUGH_ENERGY) {
@@ -141,44 +144,54 @@ StructureSpawn.prototype.spawnCreepWithRole =
 		var xOffset = 15;
 		var yOffset = 6;
 		room.visual.text(
+			'Starters (' + numberOfCreeps['starter'] + '/' + minimumNumberOfStarters + ')',
+			this.pos.x - xOffset, 
+			this.pos.y - yOffset + 2, 
+			{align: 'left'});
+		room.visual.text(
 			'Harvesters (' + numberOfCreeps['harvester'] + '/' + minimumNumberOfHarvesters + ')',
 			this.pos.x - xOffset, 
 			this.pos.y - yOffset + 3, 
 			{align: 'left'});
 		room.visual.text(
-			'Upgraders (' + numberOfCreeps['upgrader'] + '/' + minimumNumberOfUpgraders + ')',
+			'Hauler (' + numberOfCreeps['hauler'] + '/' + minimumNumberOfHaulers + ')',
 			this.pos.x - xOffset, 
 			this.pos.y - yOffset + 4, 
 			{align: 'left'});
-			
 		room.visual.text(
-			'Builders (' + numberOfCreeps['builder'] + '/' + minimumNumberOfBuilders + ')',
+			'Upgraders (' + numberOfCreeps['upgrader'] + '/' + minimumNumberOfUpgraders + ')',
 			this.pos.x - xOffset, 
 			this.pos.y - yOffset + 5, 
 			{align: 'left'});
 			
 		room.visual.text(
-			'Repairers (' + numberOfCreeps['repairer'] + '/' + minimumNumberOfRepairers + ')',
+			'Builders (' + numberOfCreeps['builder'] + '/' + minimumNumberOfBuilders + ')',
 			this.pos.x - xOffset, 
 			this.pos.y - yOffset + 6, 
 			{align: 'left'});
 			
 		room.visual.text(
-			'Patchers (' + numberOfCreeps['patcher'] + '/' + minimumNumberOfPatchers + ')',
+			'Repairers (' + numberOfCreeps['repairer'] + '/' + minimumNumberOfRepairers + ')',
 			this.pos.x - xOffset, 
 			this.pos.y - yOffset + 7, 
+			{align: 'left'});
+			
+		room.visual.text(
+			'Patchers (' + numberOfCreeps['patcher'] + '/' + minimumNumberOfPatchers + ')',
+			this.pos.x - xOffset, 
+			this.pos.y - yOffset + 8, 
 			{align: 'left'});
 		
 		room.visual.text(
 			'Foragers (' + numberOfCreeps['forager'] + '/' + minimumNumberOfForagers + ')',
 			this.pos.x - xOffset, 
-			this.pos.y - yOffset + 8, 
+			this.pos.y - yOffset + 9, 
 			{align: 'left'});
 			
 		room.visual.text(
 			'Claimers (' + numberOfCreeps['claimer'] + '/' + minimumNumberOfClaimers + ')',
 			this.pos.x - xOffset, 
-			this.pos.y - yOffset + 9, 
+			this.pos.y - yOffset + 10, 
 			{align: 'left'});
 	};
 
@@ -203,6 +216,41 @@ StructureSpawn.prototype.createCustomCreep =
 
 		// create creep with the created body and the given role
 		return this.createCreep(body, name, { role: roleName, working: false });
+	};
+
+StructureSpawn.prototype.createHarvester =
+	function(energy) {
+		var name = this.getRandomName('Harvester');
+
+		// create a balanced body as big as possible with the given energy
+		var numberOfParts = Math.floor((energy-50) / 100);
+		var body = [MOVE];
+		for (let i = 0; i < numberOfParts; i++) {
+			body.push(WORK);
+		}
+		console.log("Creating " + name + " with body[" + body + "]");
+
+		// create creep with the created body and the given role
+		return this.createCreep(body, name, { role: 'harvester' });
+	};
+	
+StructureSpawn.prototype.createHauler =
+	function(energy) {
+		var name = this.getRandomName('Hauler');
+
+		// create a balanced body as big as possible with the given energy
+		var numberOfParts = Math.floor(energy / 100);
+		var body = [];
+		for (let i = 0; i < numberOfParts; i++) {
+			body.push(MOVE);
+		}
+		for (let i = 0; i < numberOfParts; i++) {
+			body.push(CARRY);
+		}
+		console.log("Creating " + name + " with body[" + body + "]");
+
+		// create creep with the created body and the given role
+		return this.createCreep(body, name, { role: 'hauler', working: false });
 	};
 
 StructureSpawn.prototype.createForager =
