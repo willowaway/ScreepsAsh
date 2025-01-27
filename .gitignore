@@ -1,6 +1,6 @@
 # Generated filea in default dir
-/default/*.js
-/default/*.js.map
+*.js
+*.js.map
 
 # idea
 /.idea
@@ -9,7 +9,3 @@
 /node_modules
 
 .sync
-
-# JavaScript and .map files
-.js
-.map
