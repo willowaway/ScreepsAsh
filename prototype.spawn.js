@@ -60,7 +60,7 @@ StructureSpawn.prototype.spawnCreepWithRole =
 		var minimumNumberOfBuilders = roomControllerLevel;
 		var minimumNumberOfRepairers = 1 + Math.floor(numberOfStructures / 4);
 		var minimumNumberOfPatchers = 1 + Math.floor(numberOfWalls / 5);
-		var minimumNumberOfForagers = 16;
+		var minimumNumberOfForagers = roomControllerLevel * 3;
 		var minimumNumberOfClaimers = 1;
 
 		let maxEnergy = room.energyCapacityAvailable;
