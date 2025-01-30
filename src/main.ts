@@ -17,7 +17,7 @@ import { TowerManager } from 'managers/tower';
 import { UpgradeManager } from 'managers/upgrade';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
-import { ErrorMapper, USE_ERROR_MAPPER } from 'utils/errorMapper';
+import { ErrorMapper, USE_ERROR_MAPPER } from 'utils/error';
 import { alert, setLogLevel, warning } from 'utils/log';
 
 /**

@@ -6,7 +6,7 @@ import * as Upgrader from 'roles/upgrader';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { getCreepsInQueue, orderCreep } from 'utils/order';
-import { getHeavyWorkerBody, getMaxTierHeavyWorker } from 'utils/profile';
+import { getUpgraderBody, getMaxTierUpgrader as getMaxTierUpgrader } from 'utils/profile';
 
 /**
  * The `UpgradeManager` class orchestrates the controller upgrading activities and behaviors of the bot.
@@ -56,8 +56,8 @@ export class UpgradeManager extends Manager {
 
 		if (active + ordered === 0) {
 			const order = new Order();
-			const maxTier = getMaxTierHeavyWorker(room.energyCapacityAvailable);
-			order.body = getHeavyWorkerBody(maxTier);
+			const maxTier = getMaxTierUpgrader(room.energyCapacityAvailable);
+			order.body = getUpgraderBody(maxTier);
 			order.priority = Priority.Standard;
 			order.memory = {
 				role: Role.Upgrader,

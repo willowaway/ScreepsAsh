@@ -6,7 +6,7 @@
 const STARTER_MAX_TIER = 12;
 const HARVESTER_MAX_TIER = 16;
 const HAULER_MAX_TIER = 8;
-const HEAVY_WORKER_MAX_TIER = 12;
+const UPGRADER_MAX_TIER = 12;
 
 /**
  * Assembles a body for a Starter creep which has 1:1 WORK to CARRY parts [WORK, MOVE, CARRY, MOVE].
@@ -52,13 +52,13 @@ export function getMaxTierHarvester(energy: number) {
 }
 
 /**
- * Assembles a body for a Heavy Worker creep which has 3:1 WORK to CARRY parts.
+ * Assembles a body for a Upgrader creep which has 3:1 WORK to CARRY parts.
  * @param tier The scaling size of the creep body.
  * @returns The creep body array.
  */
-export function getHeavyWorkerBody(tier: number) {
-	if (tier > HEAVY_WORKER_MAX_TIER) {
-		tier = HEAVY_WORKER_MAX_TIER;
+export function getUpgraderBody(tier: number) {
+	if (tier > UPGRADER_MAX_TIER) {
+		tier = UPGRADER_MAX_TIER;
 	}
 	let body: BodyPartConstant[] = [];
 	body = addToBody(body, Math.floor(tier / 2), [WORK, WORK, MOVE, MOVE]);
@@ -67,12 +67,12 @@ export function getHeavyWorkerBody(tier: number) {
 }
 
 /**
- * Determines the maximum size for a Heavy Worker creep based on energy.
+ * Determines the maximum size for a Upgrader creep based on energy.
  * @param energy The maximum amount of energy to use for spawning the creep body.
  * @returns The maximum tier for the amount of energy.
  */
-export function getMaxTierHeavyWorker(energy: number) {
-	return getMaxTier(energy, getHeavyWorkerBody, HEAVY_WORKER_MAX_TIER);
+export function getMaxTierUpgrader(energy: number) {
+	return getMaxTier(energy, getUpgraderBody, UPGRADER_MAX_TIER);
 }
 
 /**
