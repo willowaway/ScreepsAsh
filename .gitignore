@@ -1,11 +1,10 @@
-# Generated filea in default dir
-*.js
-*.js.map
+# screeps server config
+screeps.json
 
-# idea
-/.idea
+# folders
+dist/
+node_modules/
 
-# node
-/node_modules
-
-.sync
+# system generated
+.DS_Store
+Thumbs.db
