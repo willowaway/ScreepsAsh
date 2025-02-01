@@ -1,0 +1,25 @@
+{
+	"editor.tabSize": 2,
+	"files.encoding": "utf8",
+	"files.trimTrailingWhitespace": true,
+	"files.insertFinalNewline": true,
+	"search.exclude": {
+		"dist/**": true,
+		"docs/**": true,
+		"node_modules/**": true
+	},
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"editor.codeActionsOnSave": {
+		"source.fixAll": "explicit"
+	},
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"eslint.workingDirectories": [
+		{
+			"mode": "location"
+		}
+	],
+	"compile-hero.disable-compile-files-on-did-save-code": true,
+	"prettier.useTabs": true,
+	"prettier.tabWidth": 4
+}

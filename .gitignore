@@ -1,0 +1,10 @@
+# screeps server config
+screeps.json
+
+# folders
+dist/
+node_modules/
+
+# system generated
+.DS_Store
+Thumbs.db
