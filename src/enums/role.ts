@@ -12,6 +12,7 @@ export enum Role {
 	Builder = 4,
 	Repairer = 5,
 	Patcher = 6,
-	Forager = 7,
-	Claimer = 8
+	Scout = 7,
+	Forager = 8,
+	Claimer = 9,
 }

@@ -6,10 +6,15 @@ import 'utils/commands';
 
 import { LogLevel } from 'enums/logLevel';
 import { Priority } from 'enums/priority';
+
 import { StartManager } from 'managers/start';
 import { HarvestManager } from 'managers/harvest';
 import { HaulManager } from 'managers/haul';
 import { BuildManager } from 'managers/build';
+import { RepairManager } from 'managers/repair';
+import { PatchManager } from 'managers/patch';
+import { ForageManager } from 'managers/forage';
+
 import { MemoryManager } from 'managers/memory';
 import { OperationManager } from 'managers/operation';
 import { SpawnManager } from 'managers/spawn';
@@ -45,11 +50,16 @@ export const loop = loopWrapper(() => {
 	const taskManagers = [
 		new MemoryManager(),
 		new TowerManager(roomService),
+
 		new StartManager(roomService, creepService),
 		new HarvestManager(roomService, creepService),
 		new HaulManager(roomService, creepService),
 		new UpgradeManager(roomService, creepService),
 		new BuildManager(roomService, creepService),
+		new RepairManager(roomService, creepService),
+		new PatchManager(roomService, creepService),
+		new ForageManager(roomService, creepService),
+
 		new OperationManager(roomService, creepService)
 	];
 

@@ -5,36 +5,30 @@
  */
 
 import { Role } from "enums/role";
+import { CreepState } from "enums/creepState";
 import { logUnknownState } from "utils/creep";
-
-enum State {
-	HarvestEnergy = 1,
-	TransferEnergy = 2,
-	PickupEnergy = 3,
-	UpgradeController = 4
-}
 
 export function run(creep: Creep) {
 	if (!creep.hasState()) {
-		creep.setState(State.HarvestEnergy);
+		creep.setState(CreepState.HarvestEnergy);
 	}
 
 	switch (creep.memory.state) {
-		case State.HarvestEnergy:
+		case CreepState.HarvestEnergy:
 			runHarvestEnergy(creep);
 			break;
-		case State.TransferEnergy:
+		case CreepState.TransferEnergy:
 			runTransferEnergy(creep);
 			break;
-		case State.PickupEnergy:
+		case CreepState.PickupEnergy:
 			runPickupEnergy(creep);
 			break;
-		case State.UpgradeController:
+		case CreepState.UpgradeController:
 			runUpgradeController(creep);
 			break;
 		default:
 			logUnknownState(creep);
-			creep.setStateAndRun(State.HarvestEnergy, runHarvestEnergy);
+			creep.setStateAndRun(CreepState.HarvestEnergy, runHarvestEnergy);
 			break;
 	}
 }
@@ -42,7 +36,7 @@ export function run(creep: Creep) {
 function runHarvestEnergy(creep: Creep) {
 	if (creep.isFull()) {
 		creep.say("🔋Transfer");
-		creep.setStateAndRun(State.TransferEnergy, runTransferEnergy);
+		creep.setStateAndRun(CreepState.TransferEnergy, runTransferEnergy);
 		return;
 	}
 
@@ -63,12 +57,12 @@ function runTransferEnergy(creep: Creep) {
 	// Only harvest energy if there are no harvesters, otherwise just act like a Hauler, as long as there is dropped energy to pickup
 	if (creep.store[RESOURCE_ENERGY] === 0 && creep.room.getCreeps(Role.Harvester, null).length > 0 && getClosestDroppedEnergy(creep)) {
 		creep.say("📦Pickup");
-		creep.setStateAndRun(State.PickupEnergy, runPickupEnergy);
+		creep.setStateAndRun(CreepState.PickupEnergy, runPickupEnergy);
 		return;
 	}
 	else if (creep.store[RESOURCE_ENERGY] === 0) {
 		creep.say("⚡Harvest");
-		creep.setStateAndRun(State.HarvestEnergy, runHarvestEnergy);
+		creep.setStateAndRun(CreepState.HarvestEnergy, runHarvestEnergy);
 		return;
 	}
 
@@ -88,7 +82,7 @@ function runTransferEnergy(creep: Creep) {
 		}
 	} else {
 		creep.say('⚡Upgrade');
-		creep.setStateAndRun(State.UpgradeController, runUpgradeController);
+		creep.setStateAndRun(CreepState.UpgradeController, runUpgradeController);
 	}
 }
 
@@ -106,7 +100,7 @@ function runPickupEnergy(creep: Creep) {
 
 	if (creep.isFull()) {
 		creep.say('🔋Transfer');
-		creep.setStateAndRun(State.TransferEnergy, runTransferEnergy);
+		creep.setStateAndRun(CreepState.TransferEnergy, runTransferEnergy);
 		return;
 	}
 
@@ -131,7 +125,7 @@ function getClosestDroppedEnergy(creep: Creep) {
 function runUpgradeController(creep: Creep) {
 	if (!creep.store[RESOURCE_ENERGY]) {
 		creep.say('📦Pickup');
-		creep.setStateAndRun(State.PickupEnergy, runPickupEnergy);
+		creep.setStateAndRun(CreepState.PickupEnergy, runPickupEnergy);
 		return;
 	}
 

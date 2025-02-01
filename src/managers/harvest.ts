@@ -5,8 +5,8 @@ import { Manager } from 'managers/manager';
 import * as Harvester from 'roles/harvester';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
-import { getCreepsInQueue, orderCreep } from 'utils/order';
-import { getMaxTierStarter, getStarterBody } from 'utils/profile';
+import { orderCreep } from 'utils/order';
+import { getMaxTierSimple, getSimpleBody } from 'utils/profile';
 
 /**
  * The `HarvestManager` class orchestrates the energy harvesting activities and behaviors of the bot.
@@ -53,7 +53,7 @@ export class HarvestManager extends Manager {
 			const maxNumberOfHarvesters = source.getMaxNumberOfHarvesters();
 			const sourceTarget = room.name + '-' + source.id;
 			const numberOfHarvestersTargettingSource = this.creepService.getCreeps(Role.Harvester, sourceTarget, room.name).length;
-			const numberOfOrderedHarvestersTargettingSource = getCreepsInQueue(room, Role.Harvester, sourceTarget);
+			const numberOfOrderedHarvestersTargettingSource = this.creepService.getCreepsInQueue(room, Role.Harvester, sourceTarget);
 
 			if (numberOfHarvestersTargettingSource + numberOfOrderedHarvestersTargettingSource < maxNumberOfHarvesters) {
 				for (let index = 0; index < maxNumberOfHarvesters; index++) {
@@ -67,8 +67,8 @@ export class HarvestManager extends Manager {
 
 		const order = new Order();
 		const sourceTarget = sourceRoom + '-' + sourceId;
-		const maxTier = getMaxTierStarter(room.energyCapacityAvailable);
-		order.body = getStarterBody(maxTier);
+		const maxTier = getMaxTierSimple(room.energyCapacityAvailable);
+		order.body = getSimpleBody(maxTier);
 		if (room.name === sourceRoom) {
 			order.priority = Priority.Important;
 		} else {

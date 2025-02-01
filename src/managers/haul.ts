@@ -5,7 +5,7 @@ import { Manager } from 'managers/manager';
 import * as Hauler from 'roles/hauler';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
-import { getCreepsInQueue, orderCreep } from 'utils/order';
+import { orderCreep } from 'utils/order';
 import { getHaulerBody, getMaxTierHauler } from 'utils/profile';
 
 /**
@@ -43,36 +43,37 @@ export class HaulManager extends Manager {
 	}
 
 	private organizeEnergyHauling(room: Room) {
-		const sources = room.find(FIND_SOURCES);
-		for (const source of sources) {
-			this.orderHauler(room, room.name);
-		}
-	}
 
-	private orderHauler(room: Room, sourceRoom: string) {
 		const spawn = room.getMySpawn();
 		if (!spawn) {
 			return;
 		}
 
 		const active = this.creepService.getCreeps(Role.Hauler, null, room.name).length;
-		const ordered = getCreepsInQueue(room, Role.Hauler);
+		const ordered = this.creepService.getCreepsInQueue(room, Role.Hauler);
+		const sources = room.find(FIND_SOURCES);
 
-		if (active + ordered === 0) {
-			const order = new Order();
-			const maxTier = getMaxTierHauler(room.energyCapacityAvailable);
-			order.body = getHaulerBody(maxTier);
-			if (room.name === sourceRoom) {
-				order.priority = Priority.Important;
-			} else {
-				order.priority = Priority.Standard;
+		if (active + ordered < sources.length - 1) {
+			for (const source of sources) {
+				this.orderHauler(room, room.name);
 			}
-			order.memory = {
-				role: Role.Hauler,
-				tier: maxTier,
-				homeroom: room.name
-			};
-			orderCreep(room, order);
 		}
+	}
+
+	private orderHauler(room: Room, sourceRoom: string) {
+		const order = new Order();
+		const maxTier = getMaxTierHauler(room.energyCapacityAvailable);
+		order.body = getHaulerBody(maxTier);
+		if (room.name === sourceRoom) {
+			order.priority = Priority.Important;
+		} else {
+			order.priority = Priority.Standard;
+		}
+		order.memory = {
+			role: Role.Hauler,
+			tier: maxTier,
+			homeroom: room.name
+		};
+		orderCreep(room, order);
 	}
 }

@@ -2,7 +2,7 @@ import { Order } from 'classes/order';
 import { Priority } from 'enums/priority';
 import { Role } from 'enums/role';
 import { Manager } from 'managers/manager';
-import * as Builder from 'roles/builder';
+import * as Patcher from 'roles/patcher';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
 import { orderCreep } from 'utils/order';
@@ -15,21 +15,21 @@ import { getMaxTierSimple, getSimpleBody } from 'utils/profile';
  * associated tasks within the framework.
  */
 
-export class BuildManager extends Manager {
+export class PatchManager extends Manager {
 	private roomService: RoomService;
 	private creepService: CreepService;
 
 	readonly MEMORY_LASTRUN = 'lastRun';
 
 	constructor(roomService: RoomService, creepService: CreepService) {
-		super('BuildManager');
+		super('PatchManager');
 		this.roomService = roomService;
 		this.creepService = creepService;
 	}
 
 	public run(pri: Priority) {
 		if (pri === Priority.Low) {
-			this.creepService.runCreeps(Role.Builder, Builder.run);
+			this.creepService.runCreeps(Role.Patcher, Patcher.run);
 
 			const lastRun = this.getValue(this.MEMORY_LASTRUN);
 			if (!lastRun || lastRun + 20 < Game.time) {
@@ -42,13 +42,13 @@ export class BuildManager extends Manager {
 
 	private organizeStructureBuilding(rooms: Room[]) {
 		for (const room of rooms) {
-			this.orderBuilder(room);
+			this.orderPatcher(room);
 		}
 	}
 
-	private orderBuilder(room: Room) {
-		const active = this.creepService.getCreeps(Role.Builder, null, room.name).length;
-		const ordered = this.creepService.getCreepsInQueue(room, Role.Builder);
+	private orderPatcher(room: Room) {
+		const active = this.creepService.getCreeps(Role.Patcher, null, room.name).length;
+		const ordered = this.creepService.getCreepsInQueue(room, Role.Patcher);
 
 		if (active + ordered === 0) {
 			const order = new Order();
@@ -56,7 +56,7 @@ export class BuildManager extends Manager {
 			order.body = getSimpleBody(maxTier);
 			order.priority = Priority.Standard;
 			order.memory = {
-				role: Role.Builder,
+				role: Role.Patcher,
 				tier: maxTier,
 				homeroom: room.name
 			};

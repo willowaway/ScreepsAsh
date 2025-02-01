@@ -3,30 +3,32 @@
  * @module
  */
 
-const STARTER_MAX_TIER = 12;
+const SIMPLE_MAX_TIER = 12;
 const HARVESTER_MAX_TIER = 16;
 const HAULER_MAX_TIER = 8;
 const UPGRADER_MAX_TIER = 12;
+const FORAGER_MAX_TIER = 10;
+const SCOUT_MAX_TIER = 8;
 
 /**
- * Assembles a body for a Starter creep which has 1:1 WORK to CARRY parts [WORK, MOVE, CARRY, MOVE].
+ * Assembles a body for a Simple creep which has 1:1 WORK to CARRY parts [WORK, MOVE, CARRY, MOVE].
  * @param tier The scaling size of the creep body.
  * @returns The creep body array.
  */
-export function getStarterBody(tier: number) {
-	if (tier > STARTER_MAX_TIER) {
-		tier = STARTER_MAX_TIER;
+export function getSimpleBody(tier: number) {
+	if (tier > SIMPLE_MAX_TIER) {
+		tier = SIMPLE_MAX_TIER;
 	}
 	return addToBody([], tier, [WORK, MOVE, CARRY, MOVE]);
 }
 
 /**
- * Determines the maximum size for a Starter creep based on energy.
+ * Determines the maximum size for a Simplef creep based on energy.
  * @param energy The maximum amount of energy to use for spawning the creep body.
  * @returns The maximum tier for the amount of energy.
  */
-export function getMaxTierStarter(energy: number) {
-	return getMaxTier(energy, getStarterBody, STARTER_MAX_TIER);
+export function getMaxTierSimple(energy: number) {
+	return getMaxTier(energy, getSimpleBody, SIMPLE_MAX_TIER);
 }
 
 /**
@@ -94,6 +96,48 @@ export function getHaulerBody(tier: number) {
  */
 export function getMaxTierHauler(energy: number) {
 	return getMaxTier(energy, getHaulerBody, HAULER_MAX_TIER);
+}
+
+/**
+ * Assembles a body for a Simple creep which has MOVE parts [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE].
+ * @param tier The scaling size of the creep body.
+ * @returns The creep body array.
+ */
+export function getScoutBody(tier: number) {
+	if (tier > SCOUT_MAX_TIER) {
+		tier = SCOUT_MAX_TIER;
+	}
+	return addToBody([], tier, [MOVE, MOVE, MOVE, MOVE, MOVE, MOVE]);
+}
+
+/**
+ * Determines the maximum size for a Simplef creep based on energy.
+ * @param energy The maximum amount of energy to use for spawning the creep body.
+ * @returns The maximum tier for the amount of energy.
+ */
+export function getMaxTierScout(energy: number) {
+	return getMaxTier(energy, getScoutBody, SCOUT_MAX_TIER);
+}
+
+/**
+ * Assembles a body for a Hauler creep which has 1:1 MOVE to CARRY parts.
+ * @param tier The scaling size of the creep body.
+ * @returns The creep body array.
+ */
+export function getForagerBody(tier: number) {
+	if (tier > FORAGER_MAX_TIER) {
+		tier = FORAGER_MAX_TIER;
+	}
+	return addToBody([], tier, [CARRY, MOVE, WORK, CARRY, MOVE]);
+}
+
+/**
+ * Determines the maximum size for a Hauler creep based on energy.
+ * @param energy The maximum amount of energy to use for spawning the creep body.
+ * @returns The maximum tier for the amount of energy.
+ */
+export function getMaxTierForager(energy: number) {
+	return getMaxTier(energy, getForagerBody, FORAGER_MAX_TIER);
 }
 
 /**

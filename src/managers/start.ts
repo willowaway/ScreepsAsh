@@ -5,8 +5,8 @@ import { Manager } from 'managers/manager';
 import * as Starter from 'roles/starter';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
-import { getCreepsInQueue, orderCreep } from 'utils/order';
-import { getMaxTierStarter, getStarterBody } from 'utils/profile';
+import { orderCreep } from 'utils/order';
+import { getMaxTierSimple, getSimpleBody } from 'utils/profile';
 
 /**
  * The `StartManager` class orchestrates the very beginning energy harvesting/hauling activities and behaviors of the first bot.
@@ -50,7 +50,7 @@ export class StartManager extends Manager {
 
 		const starters = this.creepService.getCreeps(Role.Starter, null, room.name);
 
-		const orderedStarters = getCreepsInQueue(room, Role.Starter);
+		const orderedStarters = this.creepService.getCreepsInQueue(room, Role.Starter);
 
 		// Only have 1 starter per room
 		if (starters.length + orderedStarters === 0) {
@@ -72,8 +72,8 @@ export class StartManager extends Manager {
 
 		const order = new Order();
 		const sourceTarget = sourceRoom + '-' + sourceId;
-		const maxTier = getMaxTierStarter(room.energyCapacityAvailable);
-		order.body = getStarterBody(maxTier);
+		const maxTier = getMaxTierSimple(room.energyCapacityAvailable);
+		order.body = getSimpleBody(maxTier);
 		order.priority = Priority.Critical;
 		order.memory = {
 			role: Role.Starter,

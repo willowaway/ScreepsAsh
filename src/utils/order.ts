@@ -50,29 +50,6 @@ export function orderCreep(room: Room, order: Order) {
 }
 
 /**
- * Get number of creep orders with same role and target, where either can be null to skip matching.
- * @param room The `Room` used to find orders.
- * @param role (optional) The `Role` to search for matching orders.
- * @param target (optional) The target room name to search for matching orders.
- */
-export function getCreepsInQueue(room: Room, role: Role | null = null, target: string | null = null) {
-	if (!room.memory.orders) {
-		room.memory.orders = [];
-	}
-
-	let count = 0;
-	for (const order of room.memory.orders) {
-		if (
-			(target === null || order.memory.target === target) &&
-			(role === null || order.memory.role === role)
-		) {
-			count++;
-		}
-	}
-	return count;
-}
-
-/**
  * Clear orders queue for the specified room.
  * @param room The `Room` used to clear orders.
  */

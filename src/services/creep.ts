@@ -53,7 +53,7 @@ export class CreepService {
         }
         for (const creep of creepsWithRole) {
             if (this.creepShouldRun(creep)) {
-                creepRunMethod(creep);
+                creepRunMethod(creep, this);
             }
         }
     }
@@ -85,15 +85,162 @@ export class CreepService {
         for (const name in Game.creeps) {
             const creep = Game.creeps[name];
             if (
-                (target === null || creep.memory.target === target) &&
+				(target === null || creep.memory.target === target) &&
                 (homeroom === null || creep.memory.homeroom === homeroom) &&
                 (role === null || creep.memory.role === role)
-            ) {
+			) {
                 creeps.push(creep);
             }
         }
         return creeps;
     }
+
+	/**
+     * Fetch creeps by role, targetRoom, and homeRoom.
+     * @param role The role of creeps to be fetched.
+     * @param target The target of creeps to be fetched.
+				const creepDicTargetRoom = creep.memory.target.split("-")[0];
+     */
+    public getCreepsWithTargetRoom(targetRoom: string, role: Role | null = null, target: string | null = null, homeroom: string | null = null) {
+        const creeps: Creep[] = [];
+
+        if (role !== null) {
+            if (!this.creepDictionary[role]) {
+                return creeps;
+            }
+            for (const creep of this.creepDictionary[role]!) {
+				if (creep.memory.target) {
+					const creepDicTargetRoom = creep.memory.target.split("-")[0];
+					if (
+						(targetRoom === creepDicTargetRoom) &&
+						(target === null || creep.memory.target === target) &&
+						(homeroom === null || creep.memory.homeroom === homeroom)
+					) {
+						creeps.push(creep);
+					}
+				}
+            }
+            return creeps;
+        }
+
+        for (const name in Game.creeps) {
+            const creep = Game.creeps[name];
+			if (creep.memory.target) {
+				const creepTargetRoom = creep.memory.target.split("-")[0];
+				if (
+					(targetRoom === creepTargetRoom) &&
+					(target === null || creep.memory.target === target) &&
+					(homeroom === null || creep.memory.homeroom === homeroom) &&
+					(role === null || creep.memory.role === role)
+				) {
+					creeps.push(creep);
+				}
+			}
+        }
+        return creeps;
+    }
+
+
+	/**
+	 * Get number of creep orders with same role and target, where either can be null to skip matching.
+	 * @param room The `Room` used to find orders.
+	 * @param role (optional) The `Role` to search for matching orders.
+	 * @param target (optional) The target room name to search for matching orders.
+	 */
+	public getCreepsInQueue(room: Room | null = null, role: Role | null = null, target: string | null = null) {
+
+		let count = 0;
+
+		if (room) {
+			if (!room.memory.orders) {
+				room.memory.orders = [];
+			}
+
+			for (const order of room.memory.orders) {
+				if (
+					(target === null || order.memory.target === target) &&
+					(role === null || order.memory.role === role)
+				) {
+					count++;
+				}
+			}
+		} else {
+
+			for (const myRoomStr in Game.rooms) {
+				const myRoom = Game.rooms[myRoomStr];
+
+				if (!myRoom.memory.orders) {
+					myRoom.memory.orders = [];
+				}
+
+				for (const order of myRoom.memory.orders) {
+					if (
+						(target === null || order.memory.target === target) &&
+						(role === null || order.memory.role === role)
+					) {
+						count++;
+					}
+				}
+			}
+		}
+		return count;
+	}
+
+	/**
+	 * Get number of creep orders with targetRoom with same role and target, where either can be null to skip matching.
+	 * @param room The `Room` used to find orders.
+	 * @param role (optional) The `Role` to search for matching orders.
+	 * @param target (optional) The target room name to search for matching orders.
+	 */
+	public getCreepsInQueueWithTargetRoom(room: Room | null = null, targetRoom: string, role: Role | null = null, target: string | null = null) {
+
+
+		let count = 0;
+
+		if (room) {
+			if (!room.memory.orders) {
+				room.memory.orders = [];
+			}
+
+			for (const order of room.memory.orders) {
+				if (order.memory.target) {
+					const creepTargetRoom = order.memory.target.split("-")[0];
+
+					if (
+						(targetRoom === creepTargetRoom) &&
+						(target === null || order.memory.target === target) &&
+						(role === null || order.memory.role === role)
+					) {
+						count++;
+					}
+				}
+			}
+		} else {
+
+			for (const myRoomStr in Game.rooms) {
+				const myRoom = Game.rooms[myRoomStr];
+
+				if (!myRoom.memory.orders) {
+					myRoom.memory.orders = [];
+				}
+
+				for (const order of myRoom.memory.orders) {
+
+				if (order.memory.target) {
+					const creepTargetRoom = order.memory.target.split("-")[0];
+					if (
+						(targetRoom === creepTargetRoom) &&
+						(target === null || order.memory.target === target) &&
+						(role === null || order.memory.role === role)
+						) {
+							count++;
+						}
+					}
+				}
+			}
+		}
+		return count;
+	}
 
     /**
      * Fetch creeps by role.

@@ -1,5 +1,5 @@
 /**
- * A creep role that works on upgrading the controller.
+ * A creep role that constructs structures.
  * @module
  */
 
@@ -15,6 +15,12 @@ export function run(creep: Creep) {
 		case CreepState.PickupEnergy:
 			runPickupEnergy(creep);
 			break;
+		case CreepState.RepairStructure:
+			runRepair(creep);
+			break;
+		case CreepState.BuildConstruction:
+			runBuildConstruction(creep);
+			break;
 		case CreepState.UpgradeController:
 			runUpgradeController(creep);
 			break;
@@ -22,6 +28,44 @@ export function run(creep: Creep) {
 			logUnknownState(creep);
 			creep.setStateAndRun(CreepState.PickupEnergy, runPickupEnergy);
 			break;
+	}
+}
+
+function runRepair(creep: Creep) {
+	if (!creep.store[RESOURCE_ENERGY]) {
+		creep.say('📦Pickup');
+		creep.setStateAndRun(CreepState.PickupEnergy, runPickupEnergy);
+		return;
+	}
+
+	var structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+		filter: (s) => s.hits < s.hitsMax
+	});
+	if (structure != undefined) {
+		if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
+			creep.moveTo(structure);
+		}
+	} else {
+		creep.say("🔨Build")
+		creep.setStateAndRun(CreepState.BuildConstruction, runBuildConstruction);
+	}
+}
+
+function runBuildConstruction(creep: Creep) {
+	if (!creep.store[RESOURCE_ENERGY]) {
+		creep.say('📦Pickup');
+		creep.setStateAndRun(CreepState.PickupEnergy, runPickupEnergy);
+		return;
+	}
+
+	const constructionSite = creep.room.find(FIND_CONSTRUCTION_SITES)?.[0];
+	if (constructionSite) {
+		if (creep.build(constructionSite) === ERR_NOT_IN_RANGE) {
+			creep.moveTo(constructionSite, { visualizePathStyle: { stroke: '#ffffff' } });
+		}
+	} else {
+		creep.say('⚡Upgrade');
+		creep.setStateAndRun(CreepState.UpgradeController, runUpgradeController);
 	}
 }
 
@@ -43,8 +87,8 @@ function runUpgradeController(creep: Creep) {
 function runPickupEnergy(creep: Creep) {
 
 	if (creep.isFull()) {
-		creep.say('⚡Upgrade');
-		creep.setStateAndRun(CreepState.UpgradeController, runUpgradeController);
+		creep.say('🛠️Repair');
+		creep.setStateAndRun(CreepState.RepairStructure, runRepair);
 		return;
 	}
 

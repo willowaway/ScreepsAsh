@@ -5,7 +5,7 @@ import { Manager } from 'managers/manager';
 import * as Upgrader from 'roles/upgrader';
 import { CreepService } from 'services/creep';
 import { RoomService } from 'services/room';
-import { getCreepsInQueue, orderCreep } from 'utils/order';
+import { orderCreep } from 'utils/order';
 import { getUpgraderBody, getMaxTierUpgrader as getMaxTierUpgrader } from 'utils/profile';
 
 /**
@@ -52,7 +52,7 @@ export class UpgradeManager extends Manager {
 	private orderUpgrader(controller: StructureController) {
 		const room = controller.room;
 		const active = this.creepService.getCreeps(Role.Upgrader, controller.id).length;
-		const ordered = getCreepsInQueue(controller.room, Role.Upgrader, controller.id);
+		const ordered = this.creepService.getCreepsInQueue(controller.room, Role.Upgrader, controller.id);
 
 		if (active + ordered === 0) {
 			const order = new Order();

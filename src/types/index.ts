@@ -29,7 +29,7 @@ declare global {
 		tier: number;
 		state?: number;
 		homeroom?: string;
-		target?: string;
+		target?: string; // targetroom-sourceId
 		source?: Id<Source>;
 	}
 

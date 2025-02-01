@@ -33,9 +33,7 @@ export class RoomService {
 	 * Creates an object of all rooms in the colony indexed by type using `Game.rooms`.
 	 */
 	protected makeDictionary() {
-		const rooms: RoomDictionary = {
-			[RoomType.Normal]: []
-		};
+		const rooms: RoomDictionary = {[RoomType.Normal]: []};
 
 		for (const roomName in Game.rooms) {
 			const room = Game.rooms[roomName];

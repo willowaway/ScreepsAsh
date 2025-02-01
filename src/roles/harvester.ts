@@ -4,23 +4,20 @@
  */
 
 import { logUnknownState } from "utils/creep";
-
-enum State {
-	HarvestEnergy = 1
-}
+import { CreepState } from "enums/creepState";
 
 export function run(creep: Creep) {
 	if (!creep.hasState()) {
-		creep.setState(State.HarvestEnergy);
+		creep.setState(CreepState.HarvestEnergy);
 	}
 
 	switch (creep.memory.state) {
-		case State.HarvestEnergy:
+		case CreepState.HarvestEnergy:
 			runHarvestEnergy(creep);
 			break;
 		default:
 			logUnknownState(creep);
-			creep.setStateAndRun(State.HarvestEnergy, runHarvestEnergy);
+			creep.setStateAndRun(CreepState.HarvestEnergy, runHarvestEnergy);
 			break;
 	}
 }

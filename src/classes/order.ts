@@ -11,6 +11,7 @@ export class Order {
 	public memory: {
 		role: Role;
 		tier: number;
+		state?: number;
 		target?: string;
 		homeroom?: string;
 	};

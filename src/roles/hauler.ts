@@ -3,29 +3,24 @@
  * @module
  */
 
-import { Role } from 'enums/role';
 import { logUnknownState } from 'utils/creep';
-
-enum State {
-	PickupEnergy = 1,
-	TransferEnergy = 2
-}
+import { CreepState } from "enums/creepState";
 
 export function run(creep: Creep) {
 	if (!creep.hasState()) {
-		creep.setState(State.PickupEnergy);
+		creep.setState(CreepState.PickupEnergy);
 	}
 
 	switch (creep.memory.state) {
-		case State.PickupEnergy:
+		case CreepState.PickupEnergy:
 			runPickupEnergy(creep);
 			break;
-		case State.TransferEnergy:
+		case CreepState.TransferEnergy:
 			runTransferEnergy(creep);
 			break;
 		default:
 			logUnknownState(creep);
-			creep.setStateAndRun(State.PickupEnergy, runPickupEnergy);
+			creep.setStateAndRun(CreepState.PickupEnergy, runPickupEnergy);
 			break;
 	}
 }
@@ -34,7 +29,7 @@ function runTransferEnergy(creep: Creep) {
 
 	if (creep.store[RESOURCE_ENERGY] === 0) {
 		creep.say('📦Pickup');
-		creep.setStateAndRun(State.PickupEnergy, runPickupEnergy);
+		creep.setStateAndRun(CreepState.PickupEnergy, runPickupEnergy);
 		return;
 	}
 
@@ -57,7 +52,7 @@ function runPickupEnergy(creep: Creep) {
 
 	if (creep.isFull()) {
 		creep.say('🔋Transfer');
-		creep.setStateAndRun(State.TransferEnergy, runTransferEnergy);
+		creep.setStateAndRun(CreepState.TransferEnergy, runTransferEnergy);
 		return;
 	}
 

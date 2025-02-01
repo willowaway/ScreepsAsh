@@ -15,6 +15,9 @@ export function run(creep: Creep) {
 		case CreepState.PickupEnergy:
 			runPickupEnergy(creep);
 			break;
+		case CreepState.PatchWall:
+			runPatch(creep);
+			break;
 		case CreepState.BuildConstruction:
 			runBuildConstruction(creep);
 			break;
@@ -25,6 +28,44 @@ export function run(creep: Creep) {
 			logUnknownState(creep);
 			creep.setStateAndRun(CreepState.PickupEnergy, runPickupEnergy);
 			break;
+	}
+}
+
+function runPatch(creep: Creep) {
+	if (!creep.store[RESOURCE_ENERGY]) {
+		creep.say('📦Pickup');
+		creep.setStateAndRun(CreepState.PickupEnergy, runPickupEnergy);
+		return;
+	}
+
+	var walls = creep.room.find(FIND_STRUCTURES, {
+		filter: (s) => s.structureType == STRUCTURE_WALL
+	});
+
+	var target = undefined;
+	// Loop with increasing percentages
+	for (let percentage = 0.0001; percentage <= 1; percentage = percentage + 0.0001){
+		// Find a wall with less than percentage hits
+		for (let wall of walls) {
+			if (wall.hits / wall.hitsMax < percentage) {
+				target = wall;
+				break;
+			}
+		}
+
+		// There is one, leave the loop
+		if (target != undefined) {
+			break;
+		}
+	}
+
+	if (target != undefined) {
+		if (creep.repair(target) == ERR_NOT_IN_RANGE) {
+			creep.moveTo(target);
+		}
+	} else {
+		creep.say("🔨Build")
+		creep.setStateAndRun(CreepState.BuildConstruction, runBuildConstruction);
 	}
 }
 
@@ -64,8 +105,8 @@ function runUpgradeController(creep: Creep) {
 function runPickupEnergy(creep: Creep) {
 
 	if (creep.isFull()) {
-		creep.say('🔨Build');
-		creep.setStateAndRun(CreepState.BuildConstruction, runBuildConstruction);
+		creep.say('🧱Patch');
+		creep.setStateAndRun(CreepState.PatchWall, runPatch);
 		return;
 	}
 

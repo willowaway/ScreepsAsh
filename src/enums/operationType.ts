@@ -4,4 +4,5 @@
 
 export enum OperationType {
 	Test = 0,
+	Scout = 1,
 }

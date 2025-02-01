@@ -14,6 +14,11 @@ declare global {
 		 */
 		getCreeps(role: Role | null, target: string | null): Creep[];
 
+		getSurroundingRooms(): string[];
+
+		/** List all adjacent rooms that have available exits */
+		getAdjacentRooms(): string[];
+
 		/** @private */
 		_mySpawn?: StructureSpawn;
 	}
@@ -39,4 +44,52 @@ Room.prototype.getCreeps = function(role: Role | null = null, target: string | n
 	}
 
 	return creeps;
+}
+
+Room.prototype.getSurroundingRooms = function() {
+	let westEastStr = this.name.charAt(0);
+	const northCharIndex = this.name.indexOf("N");
+	let northSouthStr = "S";
+	if (northCharIndex != -1) {
+		northSouthStr = "N";
+	}
+
+	const westEastNumberMatch = this.name.match(/-?\d+/); // Match first integer
+	const westEastNumber = westEastNumberMatch ? parseInt(westEastNumberMatch[0]) : 0;
+
+	var indexOfNorthSouthStr = this.name.indexOf(northSouthStr);
+	var northSouthNumber = parseInt(this.name.substring(indexOfNorthSouthStr+1));
+
+	// Left, Right, Top, Bottom, TopLeft, TopRight, BottomLeft, BottomRight
+	const adjacentRooms = [
+		westEastStr + (westEastNumber + 1) + northSouthStr + northSouthNumber,
+		westEastStr + (westEastNumber - 1) + northSouthStr + northSouthNumber,
+		westEastStr + westEastNumber + northSouthStr + (northSouthNumber + 1),
+		westEastStr + westEastNumber + northSouthStr + (northSouthNumber - 1),
+		westEastStr + (westEastNumber + 1) + northSouthStr + (northSouthNumber + 1),
+		westEastStr + (westEastNumber - 1) + northSouthStr + (northSouthNumber + 1),
+		westEastStr + (westEastNumber + 1) + northSouthStr + (northSouthNumber - 1),
+		westEastStr + (westEastNumber - 1) + northSouthStr + (northSouthNumber - 1),
+	];
+	return adjacentRooms;
+}
+
+Room.prototype.getAdjacentRooms = function() {
+	const exits = Game.map.describeExits(this.name);
+	let rooms: string[] = [];
+
+	if (exits[TOP] != null) {
+		rooms.push(exits[TOP]);
+	}
+	if (exits[RIGHT] != null) {
+		rooms.push(exits[RIGHT]);
+	}
+	if (exits[BOTTOM] != null) {
+		rooms.push(exits[BOTTOM]);
+	}
+	if (exits[LEFT] != null) {
+		rooms.push(exits[LEFT]);
+	}
+
+	return rooms;
 }
