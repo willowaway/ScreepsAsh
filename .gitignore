@@ -8,3 +8,5 @@ node_modules/
 # system generated
 .DS_Store
 Thumbs.db
+
+.sync
